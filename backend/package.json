@@ -4,9 +4,10 @@
   "description": "This is the backend of the spotube app",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
   },
-  "author": "",
+  "author": "Ashish @Devloper",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.2"
