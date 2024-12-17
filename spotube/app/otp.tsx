@@ -1,19 +1,66 @@
-import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
 import MaskInput from 'react-native-mask-input';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { isClerkAPIResponseError, useSignIn, useSignUp } from '@clerk/clerk-expo';
 
 const Page = () => {
     const router = useRouter();
-    const [phone, setPhone] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [loading, setLoading] = useState(false);
+    const { signUp, setActive } = useSignUp();
+    const { signIn } = useSignIn();
 
-    const sendOtp = () => {
+    const sendOTP = async () => {
+        console.log('sendOTP', phoneNumber);
         setLoading(true);
-        setTimeout(() => {
-            router.push(`/auth/[phone]`);
-            setLoading(false);
-        }, 2000);
+
+        try {
+            await signUp!.create({
+                phoneNumber,
+            });
+            console.log('TESafter createT: ', signUp!.createdSessionId);
+
+            await signUp!.preparePhoneNumberVerification();
+
+            console.log('after prepare: ');
+            router.push(`/auth/${phoneNumber}`);
+        } catch (err) {
+            console.log('error', JSON.stringify(err, null, 2));
+
+            if (isClerkAPIResponseError(err)) {
+                if (err.errors[0].code === 'form_identifier_exists') {
+                    // User signed up before
+                    console.log('User signed up before');
+                    await trySignIn();
+                } else {
+                    setLoading(false);
+                    Alert.alert('Error', err.errors[0].message);
+                }
+            }
+        }
+    };
+
+    const trySignIn = async () => {
+        console.log('trySignIn', phoneNumber);
+
+        const { supportedFirstFactors } = await signIn!.create({
+            identifier: phoneNumber,
+        });
+
+        const firstPhoneFactor = supportedFirstFactors.find((factor) => {
+            return factor.strategy === 'phone_code';
+        });
+
+        const { phoneNumberId } = firstPhoneFactor;
+
+        await signIn!.prepareFirstFactor({
+            strategy: 'phone_code',
+            phoneNumberId,
+        });
+
+        router.push(`/auth/${phoneNumber}?signin=true`);
+        setLoading(false);
     };
 
     return (
@@ -24,17 +71,17 @@ const Page = () => {
                 <>
                     <Text style={styles.label}>Enter your phone number</Text>
                     <MaskInput
-                        value={phone}
+                        value={phoneNumber}
                         placeholder='+91 XXX XXX-XXXX'
                         onChangeText={(masked, unmasked) => {
-                            setPhone(masked);
+                            setPhoneNumber(masked);
                         }}
                         mask={['+', '9', '1', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
                         style={styles.input}
                         keyboardType="numeric"
                     />
-                    <TouchableOpacity style={styles.btn} onPress={sendOtp} disabled={loading}>
-                        <Text style={styles.btnText}>{loading ? 'Sending...' : 'Send OTP'}</Text>
+                    <TouchableOpacity style={styles.btn} onPress={sendOTP} disabled={loading}>
+                        <Text style={styles.btnText}>Send OTP</Text>
                     </TouchableOpacity>
                 </>
             )}
