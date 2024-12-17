@@ -47,9 +47,6 @@ const createTokenCache = (): TokenCache => {
 
 
 export default function RootLayout() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const segments = useSegments();
-  const router = useRouter();
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -65,6 +62,24 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <ClerkProvider publishableKey={publishableKey} tokenCache={createTokenCache()}>
+      <ClerkLoaded>
+        <AuthWrapper />
+      </ClerkLoaded>
+    </ClerkProvider>
+  );
+}
+
+function AuthWrapper() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -77,14 +92,5 @@ export default function RootLayout() {
     }
   }, [isSignedIn, isLoaded, segments]);
 
-  if (!loaded) {
-    return null;
-  }
-  return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={createTokenCache()}>
-      <ClerkLoaded>
-        <Slot />
-      </ClerkLoaded>
-    </ClerkProvider>
-  );
+  return <Slot />;
 }
