@@ -1,23 +1,28 @@
-import { Tabs, useSegments } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Tabs } from 'expo-router';
+import { AntDesign } from '@expo/vector-icons';
 
-const TabsLayout = () => {
-    const segments = useSegments();
-
-    return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <Tabs
-                screenOptions={{
-                    headerShadowVisible: false,
-                    headerShown: false,
-                    tabBarStyle: {
-                        display: segments[2] === '[id]' ? 'none' : 'flex',
-                    }
-                }}
-            >
-            </Tabs>
-        </GestureHandlerRootView>
-    );
-};
-
-export default TabsLayout;
+export default function TabsLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => <AntDesign name="home" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <AntDesign name="user" color={color} size={size} />,
+        }}
+      />
+    </Tabs>
+  );
+}
