@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "This is the backend of the spotube app",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
