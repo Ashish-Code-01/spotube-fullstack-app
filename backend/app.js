@@ -15,8 +15,8 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // Routes
-// app.use("/admin", admin);
-// app.use("/user", user);
+app.use("/admin", admin);
+app.use("/user", user);
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
