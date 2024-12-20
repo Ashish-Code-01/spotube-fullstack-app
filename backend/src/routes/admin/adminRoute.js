@@ -4,6 +4,6 @@ import { createSong } from '../../controllers/adminController.js';
 
 const router = Express.Router();
 
-router.route("/createsong").get(createSong)
+router.route("/createsong").post(createSong)
 
 export default router

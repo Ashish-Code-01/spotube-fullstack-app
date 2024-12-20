@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import admin from './src/routes/admin/adminRoute.js';
 import user from './src/routes/user/userRoute.js';
+import { connectDB } from "./src/lib/dataBase.js";
 
 const app = express();
 
@@ -9,6 +10,8 @@ const app = express();
 if (process.env.NODE_ENV !== "production") {
     dotenv.config();
 }
+
+connectDB()
 
 // Using Middlewares
 app.use(express.json({ limit: "50mb" }));
