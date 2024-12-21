@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
     {
-        fullName: {
-            type: String,
+        mobileNumber: {
+            type: Number,
             required: true,
         },
         imageUrl: {
@@ -15,8 +15,11 @@ const userSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
+        isAdmin: {
+            default: false,
+        }
     },
-    { timestamps: true } //  createdAt, updatedAt
+    { timestamps: true }
 );
 
 export const User = mongoose.model("User", userSchema);
